@@ -127,7 +127,7 @@ public class PlotManager : MonoBehaviour
             switch (_fm.selectedTool)
             {
                 case PlotSelectionTool.Water:
-                    if (isBought)
+                    if (isBought && _isDry)
                     {
                         plot.color = availableColor;
                     }
