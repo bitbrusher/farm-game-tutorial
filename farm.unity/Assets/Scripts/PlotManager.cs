@@ -3,17 +3,17 @@ using UnityEngine;
 
 public class PlotManager : MonoBehaviour
 {
-    bool isPlanted = false;
-    SpriteRenderer plant;
-    BoxCollider2D plantCollider;
+    private bool _isPlanted = false;
+    private SpriteRenderer _plant;
+    private BoxCollider2D _plantCollider;
 
-    int plantStage = 0;
-    float timer;
+    private int _plantStage = 0;
+    private float _timer;
 
     public Color availableColor = Color.green;
     public Color unavailableColor = Color.red;
 
-    SpriteRenderer plot;
+    private SpriteRenderer _plot;
 
     private PlantObject _selectedPlant;
 
@@ -29,31 +29,31 @@ public class PlotManager : MonoBehaviour
 
     private void Start()
     {
-        plant = transform.GetChild(0).GetComponent<SpriteRenderer>();
-        plantCollider = transform.GetChild(0).GetComponent<BoxCollider2D>();
+        _plant = transform.GetChild(0).GetComponent<SpriteRenderer>();
+        _plantCollider = transform.GetChild(0).GetComponent<BoxCollider2D>();
         _fm = transform.parent.GetComponent<FarmManager>();
-        plot = GetComponent<SpriteRenderer>();
+        _plot = GetComponent<SpriteRenderer>();
 
         if (isBought)
         {
-            plot.sprite = drySprite;
+            _plot.sprite = drySprite;
         }
         else
         {
-            plot.sprite = unavailableSprite;
+            _plot.sprite = unavailableSprite;
         }
     }
 
     private void Update()
     {
-        if (isPlanted && !_isDry)
+        if (_isPlanted && !_isDry)
         {
-            timer -= _speed * Time.deltaTime;
+            _timer -= _speed * Time.deltaTime;
 
-            if (timer < 0 && !IsLastPlantStage())
+            if (_timer < 0 && !IsLastPlantStage())
             {
-                timer = _selectedPlant.timeBtwStages;
-                plantStage++;
+                _timer = _selectedPlant.timeBtwStages;
+                _plantStage++;
                 UpdatePlant();
             }
         }
@@ -61,7 +61,7 @@ public class PlotManager : MonoBehaviour
 
     private void OnMouseDown()
     {
-        if (isPlanted)
+        if (_isPlanted)
         {
             if (IsLastPlantStage() && !_fm.isPlanting && !_fm.isSelecting)
             {
@@ -81,9 +81,10 @@ public class PlotManager : MonoBehaviour
                     if (isBought)
                     {
                         _isDry = false;
-                        plot.sprite = normalSprite;
-                        if (isPlanted) UpdatePlant();
+                        _plot.sprite = normalSprite;
+                        if (_isPlanted) UpdatePlant();
                     }
+
                     break;
 
                 case PlotSelectionTool.Fertilizer:
@@ -92,6 +93,7 @@ public class PlotManager : MonoBehaviour
                         _fm.Transaction(-10);
                         if (_speed < 2) _speed += .2f;
                     }
+
                     break;
 
                 case PlotSelectionTool.PlotBuyer:
@@ -99,8 +101,9 @@ public class PlotManager : MonoBehaviour
                     {
                         _fm.Transaction(-100);
                         isBought = true;
-                        plot.sprite = drySprite;
+                        _plot.sprite = drySprite;
                     }
+
                     break;
             }
         }
@@ -110,15 +113,15 @@ public class PlotManager : MonoBehaviour
     {
         if (_fm.isPlanting)
         {
-            if (isPlanted || _fm.selectPlant.plant.buyPrice > _fm.money || !isBought)
+            if (_isPlanted || _fm.selectPlant.plant.buyPrice > _fm.money || !isBought)
             {
                 //can't buy
-                plot.color = unavailableColor;
+                _plot.color = unavailableColor;
             }
             else
             {
                 //can buy
-                plot.color = availableColor;
+                _plot.color = availableColor;
             }
         }
 
@@ -129,38 +132,41 @@ public class PlotManager : MonoBehaviour
                 case PlotSelectionTool.Water:
                     if (isBought && _isDry)
                     {
-                        plot.color = availableColor;
+                        _plot.color = availableColor;
                     }
                     else
                     {
-                        plot.color = unavailableColor;
+                        _plot.color = unavailableColor;
                     }
+
                     break;
 
                 case PlotSelectionTool.Fertilizer:
                     if (isBought && _fm.money >= 10)
                     {
-                        plot.color = availableColor;
+                        _plot.color = availableColor;
                     }
                     else
                     {
-                        plot.color = unavailableColor;
+                        _plot.color = unavailableColor;
                     }
+
                     break;
 
                 case PlotSelectionTool.PlotBuyer:
                     if (!isBought && _fm.money >= 100)
                     {
-                        plot.color = availableColor;
+                        _plot.color = availableColor;
                     }
                     else
                     {
-                        plot.color = unavailableColor;
+                        _plot.color = unavailableColor;
                     }
+
                     break;
 
                 default:
-                    plot.color = unavailableColor;
+                    _plot.color = unavailableColor;
                     break;
             }
         }
@@ -168,49 +174,49 @@ public class PlotManager : MonoBehaviour
 
     private void OnMouseExit()
     {
-        plot.color = Color.white;
+        _plot.color = Color.white;
     }
 
     private void Harvest()
     {
-        isPlanted = false;
-        plant.gameObject.SetActive(false);
+        _isPlanted = false;
+        _plant.gameObject.SetActive(false);
         _fm.Transaction(_selectedPlant.sellPrice);
         _isDry = true;
-        plot.sprite = drySprite;
+        _plot.sprite = drySprite;
         _speed = 1f;
     }
 
     private void Plant(PlantObject newPlant)
     {
         _selectedPlant = newPlant;
-        isPlanted = true;
+        _isPlanted = true;
 
         _fm.Transaction(-_selectedPlant.buyPrice);
 
-        plantStage = 0;
+        _plantStage = 0;
         UpdatePlant();
-        timer = _selectedPlant.timeBtwStages;
-        plant.gameObject.SetActive(true);
+        _timer = _selectedPlant.timeBtwStages;
+        _plant.gameObject.SetActive(true);
     }
 
     private void UpdatePlant()
     {
         if (_isDry)
         {
-            plant.sprite = _selectedPlant.dryPlanted;
+            _plant.sprite = _selectedPlant.dryPlanted;
         }
         else
         {
-            plant.sprite = _selectedPlant.plantStages[plantStage];
+            _plant.sprite = _selectedPlant.plantStages[_plantStage];
         }
 
-        plantCollider.size = plant.sprite.bounds.size;
-        plantCollider.offset = new Vector2(0, plant.bounds.size.y / 2);
+        _plantCollider.size = _plant.sprite.bounds.size;
+        _plantCollider.offset = new Vector2(0, _plant.bounds.size.y / 2);
     }
 
     private bool IsLastPlantStage()
     {
-        return plantStage == _selectedPlant.plantStages.Length - 1;
+        return _plantStage == _selectedPlant.plantStages.Length - 1;
     }
 }

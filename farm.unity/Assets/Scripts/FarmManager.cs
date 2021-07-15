@@ -7,7 +7,7 @@ public class FarmManager : MonoBehaviour
 {
     public PlantItem selectPlant;
     public bool isPlanting = false;
-    public int money=100;
+    public int money = 100;
     public TMP_Text moneyTxt;
 
     public Color buyColor = Color.green;
@@ -27,10 +27,9 @@ public class FarmManager : MonoBehaviour
 
     public void SelectPlant(PlantItem newPlant)
     {
-        if(selectPlant == newPlant)
+        if (selectPlant == newPlant)
         {
             CheckSelection();
-            
         }
         else
         {
@@ -46,8 +45,8 @@ public class FarmManager : MonoBehaviour
     public void SelectTool(int toolNumber)
     {
         var plotSelectionTool = (PlotSelectionTool) toolNumber;
-        
-        if(plotSelectionTool == selectedTool)
+
+        if (plotSelectionTool == selectedTool)
         {
             //deselect
             CheckSelection();
@@ -62,7 +61,7 @@ public class FarmManager : MonoBehaviour
         }
     }
 
-    void CheckSelection()
+    private void CheckSelection()
     {
         if (isPlanting)
         {
@@ -74,12 +73,14 @@ public class FarmManager : MonoBehaviour
                 selectPlant = null;
             }
         }
+
         if (isSelecting)
         {
             if (selectedTool > 0)
             {
-                buttonsImg[(int)selectedTool - 1].sprite = normalButton;
+                buttonsImg[(int) selectedTool - 1].sprite = normalButton;
             }
+
             isSelecting = false;
             selectedTool = 0;
         }
@@ -90,5 +91,4 @@ public class FarmManager : MonoBehaviour
         money += value;
         moneyTxt.text = "$" + money;
     }
-
 }

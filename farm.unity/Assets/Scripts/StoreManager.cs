@@ -19,17 +19,17 @@ public class StoreManager : MonoBehaviour
 
         foreach (var plant in _plantObjects)
         {
-            PlantItem newPlant = Instantiate(plantItem, transform).GetComponent<PlantItem>();
+            var newPlant = Instantiate(plantItem, transform).GetComponent<PlantItem>();
             newPlant.plant = plant;
         }
     }
 
-    int SortByPrice(PlantObject plantObject1, PlantObject plantObject2)
+    private static int SortByPrice(PlantObject plantObject1, PlantObject plantObject2)
     {
         return plantObject1.buyPrice.CompareTo(plantObject2.buyPrice);
     }
 
-    int SortByTime(PlantObject plantObject1, PlantObject plantObject2)
+    private static int SortByTime(PlantObject plantObject1, PlantObject plantObject2)
     {
         return plantObject1.timeBtwStages.CompareTo(plantObject2.timeBtwStages);
     }

@@ -13,7 +13,7 @@ public class PlantItem : MonoBehaviour
     public Image btnImage;
     public TMP_Text btnTxt;
 
-    FarmManager _fm;
+    private FarmManager _fm;
 
     private void Start()
     {
