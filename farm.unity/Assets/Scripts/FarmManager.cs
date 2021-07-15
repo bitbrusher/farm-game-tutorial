@@ -1,3 +1,4 @@
+using Farm;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,15 +14,13 @@ public class FarmManager : MonoBehaviour
     public Color cancelColor = Color.red;
 
     public bool isSelecting = false;
-    public int selectedTool=0;
-    // 1- water 2- Fertilizer 3- Buy plot
+    public PlotSelectionTool selectedTool = PlotSelectionTool.None;
 
     public Image[] buttonsImg;
     public Sprite normalButton;
     public Sprite selectedButton;
 
-    // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         moneyTxt.text = "$" + money;
     }
@@ -43,9 +42,12 @@ public class FarmManager : MonoBehaviour
         }
     }
 
+    //UI event from unity
     public void SelectTool(int toolNumber)
     {
-        if(toolNumber == selectedTool)
+        var plotSelectionTool = (PlotSelectionTool) toolNumber;
+        
+        if(plotSelectionTool == selectedTool)
         {
             //deselect
             CheckSelection();
@@ -55,7 +57,7 @@ public class FarmManager : MonoBehaviour
             //select tool number and check to see if anything was also selected
             CheckSelection();
             isSelecting = true;
-            selectedTool = toolNumber;
+            selectedTool = plotSelectionTool;
             buttonsImg[toolNumber - 1].sprite = selectedButton;
         }
     }
@@ -76,7 +78,7 @@ public class FarmManager : MonoBehaviour
         {
             if (selectedTool > 0)
             {
-                buttonsImg[selectedTool - 1].sprite = normalButton;
+                buttonsImg[(int)selectedTool - 1].sprite = normalButton;
             }
             isSelecting = false;
             selectedTool = 0;

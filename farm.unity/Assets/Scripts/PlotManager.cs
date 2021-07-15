@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Farm;
+using UnityEngine;
 
 public class PlotManager : MonoBehaviour
 {
@@ -32,6 +33,7 @@ public class PlotManager : MonoBehaviour
         plantCollider = transform.GetChild(0).GetComponent<BoxCollider2D>();
         _fm = transform.parent.GetComponent<FarmManager>();
         plot = GetComponent<SpriteRenderer>();
+
         if (isBought)
         {
             plot.sprite = drySprite;
@@ -48,7 +50,7 @@ public class PlotManager : MonoBehaviour
         {
             timer -= _speed * Time.deltaTime;
 
-            if (timer < 0 && plantStage < _selectedPlant.plantStages.Length - 1)
+            if (timer < 0 && !IsLastPlantStage())
             {
                 timer = _selectedPlant.timeBtwStages;
                 plantStage++;
@@ -61,7 +63,7 @@ public class PlotManager : MonoBehaviour
     {
         if (isPlanted)
         {
-            if (plantStage == _selectedPlant.plantStages.Length - 1 && !_fm.isPlanting && !_fm.isSelecting)
+            if (IsLastPlantStage() && !_fm.isPlanting && !_fm.isSelecting)
             {
                 Harvest();
             }
@@ -75,33 +77,30 @@ public class PlotManager : MonoBehaviour
         {
             switch (_fm.selectedTool)
             {
-                case 1:
+                case PlotSelectionTool.Water:
                     if (isBought)
                     {
                         _isDry = false;
                         plot.sprite = normalSprite;
                         if (isPlanted) UpdatePlant();
                     }
-
                     break;
-                case 2:
+
+                case PlotSelectionTool.Fertilizer:
                     if (_fm.money >= 10 && isBought)
                     {
                         _fm.Transaction(-10);
                         if (_speed < 2) _speed += .2f;
                     }
-
                     break;
-                case 3:
+
+                case PlotSelectionTool.PlotBuyer:
                     if (_fm.money >= 100 && !isBought)
                     {
                         _fm.Transaction(-100);
                         isBought = true;
                         plot.sprite = drySprite;
                     }
-
-                    break;
-                default:
                     break;
             }
         }
@@ -127,9 +126,8 @@ public class PlotManager : MonoBehaviour
         {
             switch (_fm.selectedTool)
             {
-                case 1:
-                case 2:
-                    if (isBought && _fm.money >= (_fm.selectedTool - 1) * 10)
+                case PlotSelectionTool.Water:
+                    if (isBought)
                     {
                         plot.color = availableColor;
                     }
@@ -137,9 +135,20 @@ public class PlotManager : MonoBehaviour
                     {
                         plot.color = unavailableColor;
                     }
-
                     break;
-                case 3:
+
+                case PlotSelectionTool.Fertilizer:
+                    if (isBought && _fm.money >= 10)
+                    {
+                        plot.color = availableColor;
+                    }
+                    else
+                    {
+                        plot.color = unavailableColor;
+                    }
+                    break;
+
+                case PlotSelectionTool.PlotBuyer:
                     if (!isBought && _fm.money >= 100)
                     {
                         plot.color = availableColor;
@@ -148,8 +157,8 @@ public class PlotManager : MonoBehaviour
                     {
                         plot.color = unavailableColor;
                     }
-
                     break;
+
                 default:
                     plot.color = unavailableColor;
                     break;
@@ -198,5 +207,10 @@ public class PlotManager : MonoBehaviour
 
         plantCollider.size = plant.sprite.bounds.size;
         plantCollider.offset = new Vector2(0, plant.bounds.size.y / 2);
+    }
+
+    private bool IsLastPlantStage()
+    {
+        return plantStage == _selectedPlant.plantStages.Length - 1;
     }
 }
